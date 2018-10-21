@@ -843,7 +843,7 @@ def composite_att_LS18(in_x, fit_result):
 # y = df.f.values
 
 # Example 2
-spec_dir = '/Users/thomaslai/Documents/astro/PAH/IRC_IRS_cmbspec/P3_final_cmbspec_20180723/'
+spec_dir = './data/'
 df = pd.read_table(spec_dir+'1120229'+'.txt',header=None,names=['w','f','f_l','f_h'])
 x = df.w.values
 y = df.f.values
