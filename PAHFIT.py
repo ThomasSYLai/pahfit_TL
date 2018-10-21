@@ -245,29 +245,31 @@ class bb(Fittable1DModel):
     # Blackbody temperatures
     temp = {
         'temp1': 1500.,
-        'temp2': 300.,
-        'temp3': 200.,
-        'temp4': 135.,
-        'temp5': 90.,
-        'temp6': 65.,
-        'temp7': 50.,
-        'temp8': 40.,
-        'temp9': 35.,
+        'temp2': 800.,
+        'temp3': 300.,
+        'temp4': 200.,
+        'temp5': 135.,
+        'temp6': 90.,
+        'temp7': 65.,
+        'temp8': 50.,
+        'temp9': 40.,
+        'temp10': 35.,
         }
 
     B1 = Parameter(description="f_T1500",default=5.1950208579398804e-11,min=0.0)
-    B2 = Parameter(description="f_T300",default=5.1950208579398804e-09,min=0.0)
-    B3 = Parameter(description="f_T200",default=9.8026148975804972e-08,min=0.0)
-    B4 = Parameter(description="f_T135",default=1.8103439742844785e-06,min=0.0)
-    B5 = Parameter(description="f_T90",default=4.1343617340316996e-05,min=0.0)
-    B6 = Parameter(description="f_T65",default=0.00032318689045496285,min=0.0)
-    B7 = Parameter(description="f_T50",default=0.0029662477318197489,min=0.0)
-    B8 = Parameter(description="f_T40",default=0.032730881124734879,min=0.0)
-    B9 = Parameter(description="f_T35",default=0.18187057971954346,min=0.0)
+    B2 = Parameter(description="f_T800",default=5.1950208579398804e-10,min=0.0)
+    B3 = Parameter(description="f_T300",default=5.1950208579398804e-09,min=0.0)
+    B4 = Parameter(description="f_T200",default=9.8026148975804972e-08,min=0.0)
+    B5 = Parameter(description="f_T135",default=1.8103439742844785e-06,min=0.0)
+    B6 = Parameter(description="f_T90",default=4.1343617340316996e-05,min=0.0)
+    B7 = Parameter(description="f_T65",default=0.00032318689045496285,min=0.0)
+    B8 = Parameter(description="f_T50",default=0.0029662477318197489,min=0.0)
+    B9 = Parameter(description="f_T40",default=0.032730881124734879,min=0.0)
+    B10 = Parameter(description="f_T35",default=0.18187057971954346,min=0.0)
 
 
     @staticmethod
-    def evaluate(in_x, B1, B2, B3, B4, B5, B6, B7, B8, B9):
+    def evaluate(in_x, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10):
 
         y = (B1 * blackbody(in_x, bb.temp['temp1'])
            + B2 * blackbody(in_x, bb.temp['temp2'])
@@ -278,6 +280,7 @@ class bb(Fittable1DModel):
            + B7 * blackbody(in_x, bb.temp['temp7'])
            + B8 * blackbody(in_x, bb.temp['temp8'])
            + B9 * blackbody(in_x, bb.temp['temp9'])
+           + B10 * blackbody(in_x, bb.temp['temp9'])
             )
 
         return y
@@ -843,7 +846,7 @@ def composite_att_LS18(in_x, fit_result):
 # y = df.f.values
 
 # Example 2
-spec_dir = '/Users/thomaslai/Documents/astro/PAH/IRC_IRS_cmbspec/P3_final_cmbspec_20180723/'
+spec_dir = './data/'
 df = pd.read_table(spec_dir+'1120229'+'.txt',header=None,names=['w','f','f_l','f_h'])
 x = df.w.values
 y = df.f.values
@@ -857,7 +860,7 @@ spline_rep = interpolate.splrep(x, blackbody(x,5000))
 y_bb = interpolate.splev(5.5, spline_rep, der=0)
 
 guess_tau_star = y_spec / y_bb 
-
+guess_tau_star = 6e-12
 # Model build up
 init_S07 = S07() * (bb()+sl(guess_tau_star)+dust()+line())
 
@@ -941,7 +944,6 @@ for L_idx, all_idx in enumerate(line_key_idx):
 # Plot attenuation curve
 # -----------------------
 ax2 = ax.twinx()
-#ax2.plot(x, 0.3*ax.get_ylim()[1] + composite_att_S07(x, result), linestyle='--', color='k')
 
 if init == init_S07:
     ax2.plot(x, composite_att_S07(x, result), linestyle='--', color='k')
@@ -961,4 +963,6 @@ ax.set_xlabel(r'Rest wavelength ($\mu$m)')
 ax.set_xticks([3.,4.,5.,10, 15, 20])
 ax.xaxis.set_major_formatter(ScalarFormatter())
 
-ax2.set_ylabel('extinction')
+ax2.set_ylabel(r'extinction ($\tau$)')
+
+plt.show()
